@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { WasteBinModel } from "../models/WasteBin";
+import { SettingsModel } from "../models/Settings";
 
 console.log("binController loaded");
 
@@ -15,7 +16,14 @@ export async function getAllBinsStatus(req: Request, res: Response) {
 
 export async function getCriticalBins(req: Request, res: Response) {
   try {
-    const threshold = Number(req.query.threshold ?? 80);
+    let threshold: number;
+
+    if (req.query.threshold) {
+      threshold = Number(req.query.threshold);
+    } else {
+      const settings = await SettingsModel.findOne();
+      threshold = settings?.defaultThreshold ?? 80;
+    }
 
     const bins = await WasteBinModel.find({
       lastFillLevel: { $ne: null, $gte: threshold }
