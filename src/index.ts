@@ -5,9 +5,17 @@ import { connectToDatabase } from "./db";
 import { startMqttListener } from "./mqtt/mqttListener"; // أضف هذا السطر
 import authRoutes from "./routes/authRoutes";
 import settingsRoutes from "./routes/settingsRoutes";
+import cors from "cors";
 
 const app = express();
 const PORT = 3000;
+
+app.use(
+  cors({
+    origin: "http://localhost:3001",
+    credentials: false, // لا نستعمل cookies، فقط Authorization header
+  })
+);
 
 app.use(express.json());
 
