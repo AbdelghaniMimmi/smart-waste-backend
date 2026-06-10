@@ -6,6 +6,7 @@ import { startMqttListener } from "./mqtt/mqttListener"; // أضف هذا الس
 import authRoutes from "./routes/authRoutes";
 import settingsRoutes from "./routes/settingsRoutes";
 import cors from "cors";
+import userRoutes from "./routes/userRoutes";
 
 const app = express();
 const PORT = 3000;
@@ -28,6 +29,7 @@ app.use("/api", sensorRoutes);
 app.use("/api", binRoutes);
 app.use("/api", authRoutes);
 app.use("/api", settingsRoutes);
+app.use("/api", userRoutes);
 
 async function start() {
   await connectToDatabase();
