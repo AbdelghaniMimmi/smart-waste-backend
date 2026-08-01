@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import jwt, { Secret, SignOptions } from "jsonwebtoken";
 import { UserModel } from "../models/User";
 
 const JWT_SECRET = process.env.JWT_SECRET || "dev_secret";
@@ -49,11 +49,20 @@ export async function loginUser(req: Request, res: Response) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const token = jwt.sign(
-      { userId: user._id, role: user.role },
-      JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN || "1d" }
-    );
+
+//=========================
+
+const secret: Secret = process.env.JWT_SECRET || JWT_SECRET;
+
+const options: SignOptions = {
+  expiresIn: (process.env.JWT_EXPIRE as SignOptions["expiresIn"]) || "30d",
+};
+
+const token = jwt.sign(
+  { userId: user._id, role: user.role },
+  secret,
+  options
+);
 
     return res.json({
       token,

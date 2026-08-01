@@ -6,7 +6,7 @@ export interface SensorReading extends Document {
   weight: number | null;
   latitude: number | null;
   longitude: number | null;
-  battery: number | null;
+  status: string;
   timestamp: string;
 }
 
@@ -16,7 +16,7 @@ const SensorReadingSchema = new Schema<SensorReading>({
   weight: { type: Number, default: null },
   latitude: { type: Number, default: null },
   longitude: { type: Number, default: null },
-  battery: { type: Number, default: null },
+  status: { type: String, default: "OK" },
   timestamp: { type: String, required: true },
 });
 

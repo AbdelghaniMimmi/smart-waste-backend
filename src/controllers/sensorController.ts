@@ -21,7 +21,7 @@ export async function createSensorReading(req: Request, res: Response) {
       weight: body.weight ?? null,
       latitude: body.latitude ?? null,
       longitude: body.longitude ?? null,
-      battery: body.battery ?? null,
+      status: body.status ?? "OK",
       timestamp,
     });
 
