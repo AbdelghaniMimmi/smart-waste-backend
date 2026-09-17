@@ -14,6 +14,52 @@ export async function getAllBinsStatus(req: Request, res: Response) {
   }
 }
 
+function isValidCoordinate(value: any, max: number): boolean {
+  return (
+    typeof value === "number" && Number.isFinite(value) && Math.abs(value) <= max
+  );
+}
+
+export async function createBin(req: Request, res: Response) {
+  try {
+    const { binId, latitude, longitude } = req.body;
+
+    if (typeof binId !== "string" || !binId.trim()) {
+      return res.status(400).json({ message: "رقم الحاوية مطلوب" });
+    }
+
+    if (!isValidCoordinate(latitude, 90)) {
+      return res.status(400).json({ message: "خط العرض غير صالح" });
+    }
+
+    if (!isValidCoordinate(longitude, 180)) {
+      return res.status(400).json({ message: "خط الطول غير صالح" });
+    }
+
+    const trimmedId = binId.trim();
+
+    const existing = await WasteBinModel.findOne({ binId: trimmedId });
+    if (existing) {
+      return res.status(409).json({ message: "رقم الحاوية مستعمل من قبل" });
+    }
+
+    // تُنشأ الحاوية بلا قراءات، وتُملأ لاحقًا من المستشعر
+    const bin = await WasteBinModel.create({
+      binId: trimmedId,
+      latitude,
+      longitude,
+      lastFillLevel: null,
+      lastWeight: null,
+      lastUpdate: null
+    });
+
+    return res.status(201).json({ message: "تم إنشاء الحاوية", bin });
+  } catch (error) {
+    console.error("Error in createBin:", error);
+    return res.status(500).json({ message: "Erreur serveur" });
+  }
+}
+
 export async function getCriticalBins(req: Request, res: Response) {
   try {
     let threshold: number;

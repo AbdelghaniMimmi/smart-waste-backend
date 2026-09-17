@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { SensorReadingModel } from "../models/sensorReading";
 import { WasteBinModel } from "../models/WasteBin";
+import { notifyOnFillChange } from "../services/notificationService";
 
 export async function createSensorReading(req: Request, res: Response) {
   try {
@@ -25,6 +26,10 @@ export async function createSensorReading(req: Request, res: Response) {
       timestamp,
     });
 
+    // مستوى الامتلاء السابق، لمعرفة ما إذا عبرت الحاوية الحد الحرج
+    const previousBin = await WasteBinModel.findOne({ binId: body.binId });
+    const previousFill = previousBin?.lastFillLevel ?? null;
+
     // 2) تحديث سجل الحاوية (إن وُجد) أو إنشاؤه إن لم يوجد
     await WasteBinModel.findOneAndUpdate(
       { binId: body.binId },
@@ -38,6 +43,9 @@ export async function createSensorReading(req: Request, res: Response) {
       },
       { upsert: true, new: true }
     );
+
+    // 3) إنشاء إشعار إن عبرت الحاوية الحد الحرج
+    await notifyOnFillChange(body.binId, previousFill, body.fillLevel);
 
     console.log("New sensor data saved:", dataEntry);
 

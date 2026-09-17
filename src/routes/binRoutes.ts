@@ -1,5 +1,9 @@
 import { Router } from "express";
-import { getAllBinsStatus, getCriticalBins } from "../controllers/binController";
+import {
+  getAllBinsStatus,
+  getCriticalBins,
+  createBin
+} from "../controllers/binController";
 import { getOptimizedRoutes } from "../controllers/routeController";
 import { requireAuth, requireRole } from "../middleware/authMiddleware";
 
@@ -7,6 +11,9 @@ const router = Router();
 
 // كل هذه الراوتات تتطلب توثيق
 router.get("/bins/status", requireAuth, requireRole(["admin", "agent"]), getAllBinsStatus);
+
+// إضافة حاوية جديدة
+router.post("/bins", requireAuth, requireRole(["admin", "agent"]), createBin);
 
 // مثلاً هذه فقط للـ admin و agent
 router.get("/bins/critical", requireAuth, requireRole(["admin", "agent"]), getCriticalBins);

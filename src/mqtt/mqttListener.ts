@@ -1,5 +1,6 @@
 import mqtt, { MqttClient } from "mqtt";
 import { WasteBinModel } from "../models/WasteBin";
+import { notifyOnFillChange } from "../services/notificationService";
 
 const MQTT_HOST = "mqtt://broker.hivemq.com";
 const MQTT_PORT = 1883;
@@ -66,12 +67,18 @@ export function startMqttListener() {
         update.longitude = lng;
       }
 
+      // مستوى الامتلاء السابق، لمعرفة ما إذا عبرت الحاوية الحد الحرج
+      const previousBin = await WasteBinModel.findOne({ binId });
+      const previousFill = previousBin?.lastFillLevel ?? null;
+
       // upsert: إذا لم توجد الحاوية، أنشئها؛ وإن وجدت، حدّثها
       await WasteBinModel.findOneAndUpdate(
         { binId },
         { $set: update },
         { upsert: true, new: true }
       );
+
+      await notifyOnFillChange(binId, previousFill, fillLevel);
 
       console.log(`WasteBin ${binId} updated`);
 

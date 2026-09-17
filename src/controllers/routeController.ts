@@ -6,6 +6,7 @@ import {
   cheapestInsertionRoute,
   totalRouteDistance
 } from "../utils/routeUtils";
+import { getRoadRoute } from "../services/roadRouteService";
 
 export async function getOptimizedRoutes(req: Request, res: Response) {
   try {
@@ -52,15 +53,25 @@ export async function getOptimizedRoutes(req: Request, res: Response) {
     const ciRoute = cheapestInsertionRoute(validPoints);
     const ciDistance = totalRouteDistance(ciRoute);
 
+    // المسار الحقيقي عبر الطرق (يعود null إن تعذّرت خدمة التوجيه)
+    const [nnRoad, ciRoad] = await Promise.all([
+      getRoadRoute(nnRoute),
+      getRoadRoute(ciRoute)
+    ]);
+
     return res.json({
       threshold,
       binsCount: validPoints.length,
       nearestNeighbor: {
         totalDistanceKm: nnDistance,
+        roadDistanceKm: nnRoad?.distanceKm ?? null,
+        geometry: nnRoad?.geometry ?? null,
         order: nnRoute.map((p) => p.id)
       },
       cheapestInsertion: {
         totalDistanceKm: ciDistance,
+        roadDistanceKm: ciRoad?.distanceKm ?? null,
+        geometry: ciRoad?.geometry ?? null,
         order: ciRoute.map((p) => p.id)
       }
     });

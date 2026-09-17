@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express, { Request, Response } from "express";
 import sensorRoutes from "./routes/sensorRoutes";
 import binRoutes from "./routes/binRoutes";
@@ -7,6 +8,7 @@ import authRoutes from "./routes/authRoutes";
 import settingsRoutes from "./routes/settingsRoutes";
 import cors from "cors";
 import userRoutes from "./routes/userRoutes";
+import notificationRoutes from "./routes/notificationRoutes";
 
 const app = express();
 const PORT = 3000;
@@ -30,6 +32,7 @@ app.use("/api", binRoutes);
 app.use("/api", authRoutes);
 app.use("/api", settingsRoutes);
 app.use("/api", userRoutes);
+app.use("/api", notificationRoutes);
 
 async function start() {
   await connectToDatabase();

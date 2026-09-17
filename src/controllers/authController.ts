@@ -55,7 +55,7 @@ export async function loginUser(req: Request, res: Response) {
 const secret: Secret = process.env.JWT_SECRET || JWT_SECRET;
 
 const options: SignOptions = {
-  expiresIn: (process.env.JWT_EXPIRE as SignOptions["expiresIn"]) || "30d",
+  expiresIn: (process.env.JWT_EXPIRES_IN as SignOptions["expiresIn"]) || "30d",
 };
 
 const token = jwt.sign(
