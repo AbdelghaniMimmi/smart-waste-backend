@@ -2,7 +2,8 @@ import { Router } from "express";
 import {
   getAllBinsStatus,
   getCriticalBins,
-  createBin
+  createBin,
+  deleteBin
 } from "../controllers/binController";
 import { getOptimizedRoutes } from "../controllers/routeController";
 import { requireAuth, requireRole } from "../middleware/authMiddleware";
@@ -14,6 +15,9 @@ router.get("/bins/status", requireAuth, requireRole(["admin", "agent"]), getAllB
 
 // إضافة حاوية جديدة
 router.post("/bins", requireAuth, requireRole(["admin", "agent"]), createBin);
+
+// حذف حاوية
+router.delete("/bins/:id", requireAuth, requireRole(["admin", "agent"]), deleteBin);
 
 // مثلاً هذه فقط للـ admin و agent
 router.get("/bins/critical", requireAuth, requireRole(["admin", "agent"]), getCriticalBins);

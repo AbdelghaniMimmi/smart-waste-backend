@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
+import mongoose from "mongoose";
 import { WasteBinModel } from "../models/WasteBin";
 import { SettingsModel } from "../models/Settings";
+import { NotificationModel } from "../models/Notification";
 
 console.log("binController loaded");
 
@@ -56,6 +58,29 @@ export async function createBin(req: Request, res: Response) {
     return res.status(201).json({ message: "تم إنشاء الحاوية", bin });
   } catch (error) {
     console.error("Error in createBin:", error);
+    return res.status(500).json({ message: "Erreur serveur" });
+  }
+}
+
+export async function deleteBin(req: Request, res: Response) {
+  try {
+    const id = String(req.params.id);
+
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(400).json({ message: "معرّف الحاوية غير صالح" });
+    }
+
+    const bin = await WasteBinModel.findByIdAndDelete(id);
+    if (!bin) {
+      return res.status(404).json({ message: "الحاوية غير موجودة" });
+    }
+
+    // حذف إشعارات الحاوية حتى لا تبقى إشعارات تشير إلى حاوية محذوفة
+    await NotificationModel.deleteMany({ binId: bin.binId });
+
+    return res.json({ message: "تم حذف الحاوية", bin });
+  } catch (error) {
+    console.error("Error in deleteBin:", error);
     return res.status(500).json({ message: "Erreur serveur" });
   }
 }
