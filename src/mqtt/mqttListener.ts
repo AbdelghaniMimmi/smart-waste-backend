@@ -49,6 +49,7 @@ export function startMqttListener() {
 
       const update: any = {
         lastUpdate: nowIso,
+        source: "sensor",
       };
 
       if (typeof fillLevel === "number") {
