@@ -8,6 +8,7 @@ export interface WasteBin extends Document {
   lastWeight: number | null;
   lastUpdate: string | null;
   status: string;
+  source: "sensor" | "manual";
 }
 
 const WasteBinSchema = new Schema<WasteBin>({
@@ -18,6 +19,8 @@ const WasteBinSchema = new Schema<WasteBin>({
   lastWeight: { type: Number, default: null },
   lastUpdate: { type: String, default: null },
   status: { type: String, default: "OK" },
+  // مصدر آخر قراءة: المستشعر أو إدخال يدوي من لوحة التحكم
+  source: { type: String, enum: ["sensor", "manual"], default: "sensor" },
 });
 
 export const WasteBinModel = mongoose.model<WasteBin>(

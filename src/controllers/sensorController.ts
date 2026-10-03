@@ -39,7 +39,8 @@ export async function createSensorReading(req: Request, res: Response) {
         longitude: body.longitude ?? null,
         lastFillLevel: body.fillLevel,
         lastWeight: body.weight ?? null,
-        lastUpdate: timestamp
+        lastUpdate: timestamp,
+        source: "sensor"
       },
       { upsert: true, new: true }
     );

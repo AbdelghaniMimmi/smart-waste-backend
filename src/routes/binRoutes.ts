@@ -3,6 +3,7 @@ import {
   getAllBinsStatus,
   getCriticalBins,
   createBin,
+  updateBin,
   deleteBin
 } from "../controllers/binController";
 import { getOptimizedRoutes } from "../controllers/routeController";
@@ -15,6 +16,9 @@ router.get("/bins/status", requireAuth, requireRole(["admin", "agent"]), getAllB
 
 // إضافة حاوية جديدة
 router.post("/bins", requireAuth, requireRole(["admin", "agent"]), createBin);
+
+// تعديل الحاوية يدويًا (الموقع، مستوى الامتلاء، الوزن)
+router.patch("/bins/:id", requireAuth, requireRole(["admin", "agent"]), updateBin);
 
 // حذف حاوية
 router.delete("/bins/:id", requireAuth, requireRole(["admin", "agent"]), deleteBin);
